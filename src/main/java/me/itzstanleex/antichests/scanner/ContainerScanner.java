@@ -42,7 +42,13 @@ public class ContainerScanner {
             Material.DROPPER,
             Material.FURNACE,
             Material.BLAST_FURNACE,
-            Material.SMOKER
+            Material.SMOKER,
+            Material.BREWING_STAND,
+            Material.CAMPFIRE,
+            Material.SOUL_CAMPFIRE,
+            Material.CRAFTER,
+            Material.DECORATED_POT
+
     );
 
     public void scanAndClear(Player player, int radius) {
