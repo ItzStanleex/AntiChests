@@ -1,6 +1,7 @@
 package me.itzstanleex.antichests.scanner;
 
 import me.itzstanleex.antichests.AntiChests;
+import me.itzstanleex.antichests.utils.MetricsManager;
 import me.itzstanleex.antichests.utils.ContainerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,7 +49,6 @@ public class ContainerScanner {
             Material.SOUL_CAMPFIRE,
             Material.CRAFTER,
             Material.DECORATED_POT
-
     );
 
     public void scanAndClear(Player player, int radius) {
@@ -66,7 +66,10 @@ public class ContainerScanner {
         player.sendMessage(ChatColor.GRAY + "Found " + containerLocations.size() + " containers, processing...");
 
         List<ContainerData> results = new ArrayList<>();
-        processContainersInBatches(containerLocations, results, player, 0);
+
+        // Gets batch size from configuration
+        int batchSize = AntiChests.getInstance().getConfig().getInt("plugin.batch-size", 100);
+        processContainersInBatches(containerLocations, results, player, 0, batchSize);
     }
 
     private List<Location> findContainerLocations(Location center, int radius) {
@@ -104,16 +107,20 @@ public class ContainerScanner {
         return locations;
     }
 
-    private void processContainersInBatches(List<Location> locations, List<ContainerData> results, Player player, int startIndex) {
-        final int BATCH_SIZE = 100;
-
+    private void processContainersInBatches(List<Location> locations, List<ContainerData> results, Player player, int startIndex, int batchSize) {
         if (startIndex >= locations.size()) {
+            // Records statistics for bStats
+            int totalItemsRemoved = results.stream()
+                    .mapToInt(data -> data.getRemovedItems().values().stream().mapToInt(Integer::intValue).sum())
+                    .sum();
+
+            MetricsManager.recordScan(totalItemsRemoved);
 
             displayResults(player, results);
             return;
         }
 
-        int endIndex = Math.min(startIndex + BATCH_SIZE, locations.size());
+        int endIndex = Math.min(startIndex + batchSize, locations.size());
 
         for (int i = startIndex; i < endIndex; i++) {
             Location loc = locations.get(i);
@@ -133,7 +140,7 @@ public class ContainerScanner {
 
         final int nextIndex = endIndex;
         Bukkit.getScheduler().runTask(AntiChests.getInstance(), () -> {
-            processContainersInBatches(locations, results, player, nextIndex);
+            processContainersInBatches(locations, results, player, nextIndex, batchSize);
         });
     }
 

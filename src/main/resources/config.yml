@@ -1,0 +1,12 @@
+bstats:
+  # Enable/disable bStats (true = enabled, false = disabled)
+  enabled: true
+
+# Plugin Settings
+# ---------------
+plugin:
+  # Maximum allowed scan radius
+  max-radius: 2000
+
+  # Batch size for processing containers (higher value = faster, but may cause lag)
+  batch-size: 100
