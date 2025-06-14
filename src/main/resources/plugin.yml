@@ -5,11 +5,11 @@ api-version: '1.21'
 author: ItzStanleex
 commands:
   antichest:
-    description: Smaže všechny věci z containerů v určitém radiusu
+    description: Deletes all items from containers within a certain radius
     usage: /antichest <radius>
     permission: antichest.use
 
 permissions:
   antichest.use:
-    description: Umožňuje použití příkazu /antichest
+    description: Allows use of the /antichest command
     default: op
